@@ -2,7 +2,7 @@ function DrawMenu {
     param ($menuItems, $menuPosition, $Multiselect, $selection)
     $l = $menuItems.length
     for ($i = 0; $i -le $l;$i++) {
-		if ($menuItems[$i] -ne $null){
+		if ($null -ne $menuItems[$i]){
 			$item = $menuItems[$i]
 			if ($Multiselect)
 			{
@@ -25,7 +25,7 @@ function DrawMenu {
 function Toggle-Selection {
 	param ($pos, [array]$selection)
 	if ($selection -contains $pos){ 
-		$result = $selection | where {$_ -ne $pos}
+		$result = $selection | Where-Object {$_ -ne $pos}
 	}
 	else {
 		$selection += $pos
@@ -34,14 +34,18 @@ function Toggle-Selection {
 	$result
 }
 
-function Menu {
-    param ([array]$menuItems, [switch]$ReturnIndex=$false, [switch]$Multiselect)
+function New-Menu {
+	[Alias("Menu")]
+    param ([array]$MenuItems, [switch]$ReturnIndex=$false, [switch]$MultiSelect, [string]$Message)
     $vkeycode = 0
     $pos = 0
     $selection = @()
     if ($menuItems.Length -gt 0)
 	{
 		try {
+			If($Message){
+				Write-Output "$($Message): "
+			}
 			[console]::CursorVisible=$false #prevents cursor flickering
 			DrawMenu $menuItems $pos $Multiselect $selection
 			While ($vkeycode -ne 13 -and $vkeycode -ne 27) {
@@ -72,7 +76,7 @@ function Menu {
 		$pos = $null
 	}
 
-    if ($ReturnIndex -eq $false -and $pos -ne $null)
+    if ($ReturnIndex -eq $false -and $null -ne $pos)
 	{
 		if ($Multiselect){
 			return $menuItems[$selection]
@@ -91,4 +95,3 @@ function Menu {
 		}
 	}
 }
-
